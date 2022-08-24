@@ -1,9 +1,8 @@
 from base64 import urlsafe_b64decode
 from email import message
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect
-
-from .models import Account
+from .models import Account, UserProfile
 from .forms import Registrationform
 from django.contrib import messages
 from django.contrib import auth
@@ -15,6 +14,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
+from .forms import UserForm,UserProfileForm
 
 
 # Create your views here.
@@ -94,7 +94,8 @@ def activate(request,uidb64,token):
 
 @login_required(login_url='login')
 def deshboard(request):
-    return render(request,'accounts/deshboard.html')
+    userprofile = get_object_or_404(UserProfile,user=request.user)
+    return render(request,'accounts/deshboard.html',context={'userprofile':userprofile})
 
 def forgotPassword(request):
     if request.method == 'POST':
@@ -156,3 +157,47 @@ def resetpassword(request):
 
     else:
         return render(request,'accounts/resetpassword.html')
+
+@login_required(login_url='/login/')
+def edit_profile(request):
+    userprofile = get_object_or_404(UserProfile,user=request.user)
+    if request.method == 'POST':
+        user_form = UserForm(request.POST,instance=request.user)
+        profile_form = UserProfileForm(request.POST,request.FILES,instance=userprofile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request,'Your profile has been updated.')
+            return redirect('edit_profile')
+    else:
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=userprofile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'userprofile': userprofile,
+    }
+    return render(request,'accounts/edit_profile.html',context)
+
+@login_required(login_url='/login/')
+def change_password(request):
+    if request.method == 'POST':
+        old_password = request.POST['old_password']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+        user = Account.objects.get(username__exact=request.user.username)
+        if new_password == confirm_password:
+            success = user.check_password(old_password)
+            if success:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request,'Password Updated Successfully..')
+                return redirect('deshboard')
+            else:
+                messages.error(request,'Your Old Password is Wrong..')
+                return redirect('change_password')
+        else:
+            messages.error(request,'Your New Password Field and Confirm Password Fields Did Not Mached..')
+            return redirect('change_password')
+    return render(request,'accounts/change_password.html')
