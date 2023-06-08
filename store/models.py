@@ -1,10 +1,13 @@
 from audioop import avg
+import profile
 from tabnanny import verbose
 from django.urls import reverse
 from django.db import models
 from category.models import Category
 from accounts.models import Account
 from django.db.models import Avg,Count
+from app_location.models import Location
+from accounts.models import UserProfile
 
 # Create your models here.
 class Product(models.Model):
@@ -17,6 +20,7 @@ class Product(models.Model):
     stock               = models.IntegerField()
     is_available        = models.BooleanField(default=True)
     category            = models.ForeignKey(Category,on_delete=models.CASCADE)
+    location            = models.ForeignKey(Location,on_delete=models.CASCADE)
     created_date        = models.DateTimeField(auto_now_add=True)
     modified_date       = models.DateTimeField(auto_now=True)
 
@@ -64,7 +68,7 @@ class Variation(models.Model):
     objects = VariationManager()
 
     def __unicode__(self):
-        return self.product
+        return self.product.product_name
 
 
 class ReviewRating(models.Model):
@@ -79,7 +83,7 @@ class ReviewRating(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.subject
+        return self.product.product_name
 
 
 class ProductGallery(models.Model):

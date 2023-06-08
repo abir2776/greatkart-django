@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 
@@ -46,6 +47,11 @@ class Account(AbstractBaseUser):
     username = models.CharField(max_length=50,unique=True)
     email =models.EmailField(max_length=100,unique=True)
     phone_number = models.CharField(max_length=50)
+    
+
+    def get_profile_pic(self):
+        user_profile = UserProfile.objects.filter(user=self)
+        return user_profile.profile_picture.url
 
 
     #required for custom user model
@@ -75,7 +81,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(Account,on_delete=models.CASCADE)
     address_line_1 = models.CharField(blank=True,max_length=100)
     address_line_2 = models.CharField(blank=True,max_length=100)
-    profile_picture = models.ImageField(blank=True,upload_to ='userprofile')
+    profile_picture = models.ImageField(blank=True,upload_to='userprofile',default='userprofile/temp.webp')
     city = models.CharField(blank=True,max_length=20)
     state = models.CharField(blank=True,max_length=20)
     country = models.CharField(blank=True,max_length=20)

@@ -31,6 +31,7 @@ def register(request):
             user = Account.objects.create_user(first_name=first_name,last_name=last_name,email=email,username=username,password=password)
             user.phone_number=phone_number
             user.save()
+            user_profile = UserProfile.objects.get_or_create(user=user)
 
             #User Activation
             current_site = get_current_site(request)

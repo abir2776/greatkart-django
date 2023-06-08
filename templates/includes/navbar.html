@@ -1,6 +1,7 @@
 {% load static %}
+{% load cart_tag %}
 <header class="section-header">
-    <nav class="navbar p-md-0 navbar-expand-sm navbar-light border-bottom">
+<!-- <nav class="navbar p-md-0 navbar-expand-sm navbar-light border-bottom">
     <div class="container">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -18,17 +19,18 @@
         <ul class="navbar-nav">
             <li><a href="#" class="nav-link"> <i class="fa fa-envelope"></i> Email </a></li>
             <li><a href="#" class="nav-link"> <i class="fa fa-phone"></i> Call us </a></li>
-        </ul> <!-- list-inline //  -->
-      </div> <!-- navbar-collapse .// -->
-    </div> <!-- container //  -->
-    </nav>
+        </ul> 
+      </div> 
+    </div> 
+    </nav> -->
     
     <section class="header-main border-bottom">
         <div class="container">
     <div class="row align-items-center">
         <div class="col-lg-2 col-md-3 col-6">
             <a href="{% url 'home' %}" class="brand-wrap">
-                <img class="logo" src="{% static './images/logo.png' %}">
+                <h1>Hotel xyz</h1>
+                <!-- <img class="logo" src="{% static './images/logo.png' %}"> -->
             </a> <!-- brand-wrap.// -->
         </div>
         <div class="col-lg col-sm col-md col-6 flex-grow-0">
@@ -37,14 +39,14 @@
                     <i class="fa fa-bars"></i> All category 
                 </button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'store' %}">All Products</a>
+                    <a class="dropdown-item" href="{% url 'store' %}">All Hotels</a>
                     {% for category in links %}
                     <a class="dropdown-item" href="{{ category.get_url }}">{{ category.category_name }}</a>
                     {% endfor %}
                 </div>
             </div>  <!-- category-wrap.// -->
         </div> <!-- col.// -->
-        <a href="{% url 'store' %}" class="btn btn-outline-primary">Store</a>
+        <a href="{% url 'store' %}" class="btn btn-outline-primary">Hotels</a>
         <div class="col-lg  col-md-6 col-sm-12 col">
             <form action="{% url 'search' %}" class="search" method='GET'>
                 <div class="input-group w-100">
@@ -68,6 +70,10 @@
                                 <a href="{% url 'register' %}"> Register</a>
                             </div>
                         </div>
+                        <a href="./cart.html" class="widget-header pl-3 ml-3">
+                            <div class="icon icon-sm rounded-circle border"><i class="fas fa-book"></i></div>
+                            <span class="badge badge-pill badge-danger notify">0</span>
+                        </a>
                         {% else %}
                         <div class="widget-header">
                             <small class="title text-muted">Welcome {{ user.first_name }}</small>
@@ -76,11 +82,11 @@
                                 <a href="{% url 'logout' %}"> Logout</a>
                             </div>
                         </div>
-                        {% endif %}
                         <a href="./cart.html" class="widget-header pl-3 ml-3">
-                            <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart"></i></div>
-                            <span class="badge badge-pill badge-danger notify">0</span>
+                            <div class="icon icon-sm rounded-circle border"><i class="fas fa-book"></i></div>
+                            <span class="badge badge-pill badge-danger notify">{{ request.user | cart_total }}</span>
                         </a>
+                        {% endif %}
                     </div> <!-- widgets-wrap.// -->
                 </div> <!-- col.// -->
     </div> <!-- row.// -->

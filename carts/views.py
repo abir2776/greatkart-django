@@ -4,7 +4,7 @@ from store.models import Product
 from .models import Cart, CartItem
 
 # Create your views here.
-def _cart_id(request):
+"""def _cart_id(request):
     cart = request.session.session_key
     if not cart:
         cart = request.session.create()
@@ -39,7 +39,6 @@ def add_cart(request,product_id):
 
 
 def cart(request,total=0,quantity=0,cart_items=None):
-    """
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart,is_active=True)
@@ -54,5 +53,5 @@ def cart(request,total=0,quantity=0,cart_items=None):
         'quantity':quantity,
         'cart_items':cart_items,
     }
-    """
-    return render(request,'store/cart.html')
+
+    return render(request,'store/cart.html')"""

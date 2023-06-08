@@ -6,16 +6,26 @@ from django.contrib import messages
 
 from category.models import Category
 from .models import Product, ProductGallery,ReviewRating
+from app_location.models import Location
 from .forms import Reviewform
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
+
 # Create your views here.
-def store(request,category_slug=None):
+def store(request,category_slug=None,location_slug=None):
     categories = None
     products = None
 
     if category_slug !=None:
         categories = get_object_or_404(Category,slug=category_slug)
         products = Product.objects.filter(category=categories,is_available=True)
+        paginator = Paginator(products,3)
+        page = request.GET.get('page')
+        paged_products = paginator.get_page(page)
+        products_count = products.count()
+
+    elif location_slug != None:
+        location = get_object_or_404(Location,slug=location_slug)
+        products = Product.objects.filter(location=location,is_available=True)
         paginator = Paginator(products,3)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
@@ -47,7 +57,6 @@ def product_detail(request,category_slug,product_slug):
 
     #get the product gallery
     product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
-
 
     context = {
         'single_product':single_product,
